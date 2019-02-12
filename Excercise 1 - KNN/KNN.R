@@ -41,15 +41,29 @@ for(i in 1:10){
 idList <- load(file = "idList-co-100.Rda")
 id <- do.call(rbind, idList[1:10])
 id <- as.data.frame(id)
+id$V1 <- factor(id$V1)
 
 #ALLLLL Persons in!
 id_shuffle <- id[sample(nrow(id)),]
-train <- id_shuffle[0:20000,-1]
-test <- id_shuffle[20001:40000,-1]
-train_labels <- id_shuffle[0:20000,1]
-test_labels <- id_shuffle[20001:40000,1]
+train <- id_shuffle[0:10000,-1]
+test <- id_shuffle[10001:40000,-1]
+train_labels <- id_shuffle[0:10000,1]
+test_labels <- id_shuffle[10001:40000,1]
 
 prediction <- knn(train = train, test = test, cl = train_labels, k= 21)
-cfcMtx <- confusionMatrix(data = prediction, reference = test_labels)
+cfcMtx1 <- confusionMatrix(data = prediction, reference = test_labels)
 acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
-cfcMtx
+cfcMtx1
+
+
+# Disjunct 
+
+train <- id[0:10000,-1]
+test <- id[10001:40000,-1]
+train_labels <- id[0:10000,1]
+test_labels <- id[10001:40000,1]
+
+prediction <- knn(train = train, test = test, cl = train_labels, k= 21)
+cfcMtx2 <- confusionMatrix(data = prediction, reference = test_labels)
+acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+cfcMtx2
