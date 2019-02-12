@@ -3,6 +3,7 @@ library(gmodels)
 library(caret)
 load("id100.Rda")
 
+# 1.4.1 
 set.seed(123)
 dataset <- id
 dataset_shuffle <- dataset[sample(nrow(dataset)),]
@@ -13,15 +14,44 @@ train_labels <- dataset_shuffle[1 : (nrow(dataset_shuffle)/2),1]
 test_set <- dataset_shuffle[ (nrow(dataset_shuffle)/2 + 1) : nrow(dataset_shuffle) ,2:ncol(dataset_shuffle)]
 test_labels <- dataset_shuffle[ (nrow(dataset_shuffle)/2 + 1) : nrow(dataset_shuffle) ,1]
 
+beforeTime <- Sys.time()
 res <- knn(train = train_set,test = test_set,cl = train_labels,k = 5)
+afterTime <- Sys.time()
 table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
 table$prop.tbl
+afterTime-beforeTime
 sum(diag(table$prop.tbl))
+
+# 1.4.2
+beforeTime <- Sys.time()
+res <- knn(train = train_set,test = test_set,cl = train_labels,k = 1)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+table$prop.tbl
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
+beforeTime <- Sys.time()
+res <- knn(train = train_set,test = test_set,cl = train_labels,k = 5)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+table$prop.tbl
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
+beforeTime <- Sys.time()
+res <- knn(train = train_set,test = test_set,cl = train_labels,k = 21)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+table$prop.tbl
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
+#1.4.3
 
 folds <- createFolds(dataset$X1, k = 10)
 
-for(k in 1:100){
-  total <- 0
+results = c()
 for(i in 1:10){
   train <- dataset[-folds[[i]],-1]
   test <- dataset[folds[[i]],-1]
@@ -32,12 +62,12 @@ for(i in 1:10){
   result <- knn(train = train, test = test, cl = train_labels, k = 21)
   cfcMtx <- confusionMatrix(data = result, reference = test_labels)
   acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
-  total <- total + acc
+  results <- c(results, acc)
 }
-  avg <- total / 10
-  print(c(k, avg))
-}
+summary(results)
+sd(results)
 
+# 1.4.4
 idList <- load(file = "idList-co-100.Rda")
 id <- do.call(rbind, idList[1:10])
 id <- as.data.frame(id)
@@ -67,3 +97,6 @@ prediction <- knn(train = train, test = test, cl = train_labels, k= 21)
 cfcMtx2 <- confusionMatrix(data = prediction, reference = test_labels)
 acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
 cfcMtx2
+
+# 1.4.5
+
