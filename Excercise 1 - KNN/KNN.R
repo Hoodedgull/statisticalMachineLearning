@@ -110,18 +110,27 @@ beforeTime <- Sys.time()
 prediction <- knn(train = train, test = test, cl = train_labels, k= 1)
 afterTime <- Sys.time()
 afterTime-beforeTime
+cfcMtx <- confusionMatrix(data = prediction, reference = test_labels)
+acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+acc
 
 "Sample size: Train 10000, Test = 30000, k = 5"
 beforeTime <- Sys.time()
 prediction <- knn(train = train, test = test, cl = train_labels, k= 5)
 afterTime <- Sys.time()
 afterTime-beforeTime
+cfcMtx <- confusionMatrix(data = prediction, reference = test_labels)
+acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+acc
 
 "Sample size: Train 10000, Test = 30000, k = 21"
 beforeTime <- Sys.time()
 prediction <- knn(train = train, test = test, cl = train_labels, k= 21)
 afterTime <- Sys.time()
 afterTime-beforeTime
+cfcMtx <- confusionMatrix(data = prediction, reference = test_labels)
+acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+acc
 
 train <- id_shuffle[0:1000,-1]
 test <- id_shuffle[1001:4000,-1]
@@ -133,15 +142,24 @@ beforeTime <- Sys.time()
 prediction <- knn(train = train, test = test, cl = train_labels, k= 1)
 afterTime <- Sys.time()
 afterTime-beforeTime
+cfcMtx <- confusionMatrix(data = prediction, reference = test_labels)
+acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+acc
 
 "Sample size: Train 1000, Test = 3000, k = 5"
 beforeTime <- Sys.time()
 prediction <- knn(train = train, test = test, cl = train_labels, k= 5)
 afterTime <- Sys.time()
 afterTime-beforeTime
+cfcMtx <- confusionMatrix(data = prediction, reference = test_labels)
+acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+acc
 
 "Sample size: Train 1000, Test = 3000, k = 21"
 beforeTime <- Sys.time()
 prediction <- knn(train = train, test = test, cl = train_labels, k= 21)
 afterTime <- Sys.time()
 afterTime-beforeTime
+cfcMtx <- confusionMatrix(data = prediction, reference = test_labels)
+acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+acc
