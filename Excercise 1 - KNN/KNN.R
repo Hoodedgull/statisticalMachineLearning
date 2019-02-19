@@ -73,7 +73,7 @@ id <- do.call(rbind, idList[1:10])
 id <- as.data.frame(id)
 id$V1 <- factor(id$V1)
 
-#ALLLLL Persons in!
+#ALL Persons in!
 id_shuffle <- id[sample(nrow(id)),]
 train <- id_shuffle[0:10000,-1]
 test <- id_shuffle[10001:40000,-1]
@@ -100,3 +100,48 @@ cfcMtx2
 
 # 1.4.5
 
+train <- id_shuffle[0:10000,-1]
+test <- id_shuffle[10001:40000,-1]
+train_labels <- id_shuffle[0:10000,1]
+test_labels <- id_shuffle[10001:40000,1]
+
+"Sample size: Train 10000, Test = 30000, k = 1"
+beforeTime <- Sys.time()
+prediction <- knn(train = train, test = test, cl = train_labels, k= 1)
+afterTime <- Sys.time()
+afterTime-beforeTime
+
+"Sample size: Train 10000, Test = 30000, k = 5"
+beforeTime <- Sys.time()
+prediction <- knn(train = train, test = test, cl = train_labels, k= 5)
+afterTime <- Sys.time()
+afterTime-beforeTime
+
+"Sample size: Train 10000, Test = 30000, k = 21"
+beforeTime <- Sys.time()
+prediction <- knn(train = train, test = test, cl = train_labels, k= 21)
+afterTime <- Sys.time()
+afterTime-beforeTime
+
+train <- id_shuffle[0:1000,-1]
+test <- id_shuffle[1001:4000,-1]
+train_labels <- id_shuffle[0:1000,1]
+test_labels <- id_shuffle[1001:4000,1]
+
+"Sample size: Train 1000, Test = 3000, k = 1"
+beforeTime <- Sys.time()
+prediction <- knn(train = train, test = test, cl = train_labels, k= 1)
+afterTime <- Sys.time()
+afterTime-beforeTime
+
+"Sample size: Train 1000, Test = 3000, k = 5"
+beforeTime <- Sys.time()
+prediction <- knn(train = train, test = test, cl = train_labels, k= 5)
+afterTime <- Sys.time()
+afterTime-beforeTime
+
+"Sample size: Train 1000, Test = 3000, k = 21"
+beforeTime <- Sys.time()
+prediction <- knn(train = train, test = test, cl = train_labels, k= 21)
+afterTime <- Sys.time()
+afterTime-beforeTime
