@@ -20,10 +20,41 @@ plot(cumsum(id_pca$sdev/totalvar), main="Cumulative sum of proportions of varian
 sum(id_pca$sdev[1:72]/totalvar)
 
 
-train <- data[0:10000,-1]
-test <- data[10001:40000,-1]
-train_labels <- data[0:10000,1]
-test_labels <- data[10001:40000,1]
 
 data <- id_pca$x[,1:72]
   
+train <- as.data.frame(data[0:10000,])
+test <- as.data.frame(data[10001:40000,])
+train_labels <- id_shuffle[0:10000,1]
+test_labels <- id_shuffle[10001:40000,1]
+
+library(class)
+library(gmodels)
+library(caret)
+
+"Sample size: Train 10000, Test = 30000, k = 1"
+beforeTime <- Sys.time()
+prediction <- knn(train = train, test = test, cl = train_labels, k= 1)
+afterTime <- Sys.time()
+afterTime-beforeTime
+cfcMtx <- confusionMatrix(data = prediction, reference = test_labels)
+acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+acc
+
+"Sample size: Train 10000, Test = 30000, k = 5"
+beforeTime <- Sys.time()
+prediction <- knn(train = train, test = test, cl = train_labels, k= 5)
+afterTime <- Sys.time()
+afterTime-beforeTime
+cfcMtx <- confusionMatrix(data = prediction, reference = test_labels)
+acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+acc
+
+"Sample size: Train 10000, Test = 30000, k = 21"
+beforeTime <- Sys.time()
+prediction <- knn(train = train, test = test, cl = train_labels, k= 21)
+afterTime <- Sys.time()
+afterTime-beforeTime
+cfcMtx <- confusionMatrix(data = prediction, reference = test_labels)
+acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+acc
