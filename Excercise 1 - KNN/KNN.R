@@ -1,7 +1,9 @@
 library(class)
 library(gmodels)
 library(caret)
-load("id100.Rda")
+
+#This loads on mac
+load("~/Desktop/TradingMarketGit/statisticalMachineLearning/Excercise 1 - KNN/id100.Rda")
 
 # 1.4.1 
 set.seed(123)
@@ -47,6 +49,14 @@ table$prop.tbl
 afterTime-beforeTime
 sum(diag(table$prop.tbl))
 
+beforeTime <- Sys.time()
+res <- knn(train = train_set,test = test_set,cl = train_labels,k = 133)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+table$prop.tbl
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
 #1.4.3
 
 folds <- createFolds(dataset$X1, k = 10)
@@ -68,12 +78,13 @@ summary(results)
 sd(results)
 
 # 1.4.4
-idList <- load(file = "idList-co-100.Rda")
+#idList <- load(file = "idList-co-100.Rda")
+load("~/Desktop/TradingMarketGit/statisticalMachineLearning/Excercise 1 - KNN/idList-co-100.Rda")
 id <- do.call(rbind, idList[1:10])
 id <- as.data.frame(id)
 id$V1 <- factor(id$V1)
 
-#ALL Persons in!
+#ALLLLL Persons in!
 id_shuffle <- id[sample(nrow(id)),]
 train <- id_shuffle[0:10000,-1]
 test <- id_shuffle[10001:40000,-1]
@@ -100,10 +111,6 @@ cfcMtx2
 
 # 1.4.5
 
-train <- id_shuffle[0:10000,-1]
-test <- id_shuffle[10001:40000,-1]
-train_labels <- id_shuffle[0:10000,1]
-test_labels <- id_shuffle[10001:40000,1]
 
 "Sample size: Train 10000, Test = 30000, k = 1"
 beforeTime <- Sys.time()
