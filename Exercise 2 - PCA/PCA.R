@@ -415,3 +415,210 @@ sd(results)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#2.4.1
+
+
+smoothImage <- function(grayImg){
+	  smoothed <- as.matrix(blur(as.im(grayImg), sigma = 0.5, normalise=FALSE, bleed = TRUE, varcov=NULL))
+	  return(smoothed)
+  
+}
+
+
+id_mat <- data.matrix(id, rownames.force = NA)
+
+rotate <- function(x) t(apply(x, 2, rev))
+imageSize <- sqrt(ncol(id_mat) - 1)
+# Show first 10 images
+for(i in 1:10)
+  {
+	  rotated <- c(id_mat[-400+i*400+1,2:ncol(id_mat)])
+	  rotated <- ((rotated - min(rotated)) / (max(rotated) - min(rotated)))
+	  
+	  image <- matrix(rotated,nrow = imageSize,ncol = imageSize, byrow = FALSE)
+	  image <- rotate(image)
+	  image( image,  zlim=c(0,1), col=gray(0:100/100) )
+	  #image <- smoothImage(image)
+	  #image(image, zlim=c(0,1),col=gray(0:100/100))
+}
+
+
+# 2.4.2
+id_pca <- prcomp(id[,-1], center = TRUE, scale = TRUE)
+
+for(i in 1:10){
+  
+eigen <- id_pca$rotation[,i]
+eigen <- ((eigen - min(eigen)) / (max(eigen) - min(eigen)))
+image <- matrix(eigen,nrow = imageSize,ncol = imageSize, byrow = FALSE)
+image <- rotate(image)
+image( image,  zlim=c(0,1), col=gray(0:100/100) )
+
+}
+
+
+#2.4.3
+
+id_pca <- prcomp(id[,-1], center = TRUE, scale = TRUE)
+
+for(cipherNumber in 1:10){
+  
+
+trunc <- id_pca$x[-400+cipherNumber*400+1,] %*% 
+  t(id_pca$rotation[,])
+trunc <- scale(trunc, center = -1 * id_pca$center, scale=FALSE)
+trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
+
+  image <- matrix(trunc,nrow = imageSize,ncol = imageSize, byrow = FALSE)
+  image <- rotate(image)
+  image( image,  zlim=c(0,1), col=gray(0:100/100) )
+}
+
+# 2.4.4
+id_pca <- prcomp(id[,-1], center = TRUE, scale = TRUE)
+cumsum(id_pca$sdev/totalvar)
+#80 percent variance
+for(cipherNumber in 1:10){
+  
+  
+  trunc <- id_pca$x[-400+cipherNumber*400+1,1:indexFor80pct] %*% 
+    t(id_pca$rotation[,1:indexFor80pct])
+  trunc <- scale(trunc, center = -1 * id_pca$center, scale=FALSE)
+  trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
+  
+  image <- matrix(trunc,nrow = imageSize,ncol = imageSize, byrow = FALSE)
+  image <- rotate(image)
+  image( image,  zlim=c(0,1), col=gray(0:100/100) )
+}
+
+#90 percent variance
+for(cipherNumber in 1:10){
+  
+  
+  trunc <- id_pca$x[-400+cipherNumber*400+1,1:indexFor90pct] %*% 
+    t(id_pca$rotation[,1:indexFor90pct])
+  trunc <- scale(trunc, center = -1 * id_pca$center, scale=FALSE)
+  trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
+  
+  image <- matrix(trunc,nrow = imageSize,ncol = imageSize, byrow = FALSE)
+  image <- rotate(image)
+  image( image,  zlim=c(0,1), col=gray(0:100/100) )
+}
+
+#95 percent variance
+for(cipherNumber in 1:10){
+  
+  
+  trunc <- id_pca$x[-400+cipherNumber*400+1,1:indexFor95pct] %*% 
+    t(id_pca$rotation[,1:indexFor95pct])
+  trunc <- scale(trunc, center = -1 * id_pca$center, scale=FALSE)
+  trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
+  
+  image <- matrix(trunc,nrow = imageSize,ncol = imageSize, byrow = FALSE)
+  image <- rotate(image)
+  image( image,  zlim=c(0,1), col=gray(0:100/100) )
+}
+
+#99 percent variance
+for(cipherNumber in 1:10){
+  
+  
+  trunc <- id_pca$x[-400+cipherNumber*400+1,1:indexFor99pct] %*% 
+    t(id_pca$rotation[,1:indexFor99pct])
+  trunc <- scale(trunc, center = -1 * id_pca$center, scale=FALSE)
+  trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
+  
+  image <- matrix(trunc,nrow = imageSize,ncol = imageSize, byrow = FALSE)
+  image <- rotate(image)
+  image( image,  zlim=c(0,1), col=gray(0:100/100) )
+}
+
+
