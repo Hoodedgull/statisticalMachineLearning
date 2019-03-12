@@ -1129,9 +1129,8 @@ for (cipherNumber in 1:10) {
 
 
 #2.4.5
-
+id_pca <- prcomp(id[, -1], center = TRUE, scale = FALSE)
 zero <- id_pca$x[-400 + 1 * 400 + 1, 1:10]
-
 one <- id_pca$x[-400 + 2 * 400 + 1, 1:10]
 zeros <- zero
 ones <- one
@@ -1139,25 +1138,25 @@ one
 zero
 for (u in 1:10) {
   aVarible <- (u-1)*4000
-  for (i in 2:400) {
+  for (i in 1:400) {
     zero <- id_pca$x[-400 + 1 * 400 + i + aVarible, 1:10]
     
     one <- id_pca$x[-400 + 2 * 400 + i + aVarible, 1:10]
     
     zeros <- zeros + zero
     ones <- ones + one
-  }
+    }
 }
 
-zeros <- zeros / 4000
-ones <- ones / 4000
+zeros <- zeros / 4001
+ones <- ones / 4001
 ones
 zeros
 
 trunc <- ones %*%
   t(id_pca$rotation[, 1:10])
 trunc <- scale(trunc, center = -1 * id_pca$center, scale = FALSE)
-trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
+#trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
 
 image <-
   matrix(trunc,
@@ -1165,6 +1164,19 @@ image <-
          ncol = imageSize,
          byrow = FALSE)
 image <- rotate(image)
+image(image,  zlim = c(0, 1), col = gray(0:100 / 100))
+
+trunc <- zeros %*%
+  t(id_pca$rotation[, 1:10])
+trunc <- scale(trunc, center = -1 * id_pca$center, scale = FALSE)
+#trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
+
+image_mat <-
+  matrix(trunc,
+         nrow = imageSize,
+         ncol = imageSize,
+         byrow = FALSE)
+image <- rotate(image_mat)
 image(image,  zlim = c(0, 1), col = gray(0:100 / 100))
 
 one
