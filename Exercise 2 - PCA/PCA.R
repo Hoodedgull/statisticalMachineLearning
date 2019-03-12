@@ -536,6 +536,7 @@ smoothImage <- function(grayImg) {
 
 #Gaussian Smoothing 
 # Smooth all images
+beforeTime <- Sys.time()
 for (i in 1:nrow(id_mat))
 {
   rotated <- c(id_mat[i, 2:ncol(id)])
@@ -551,6 +552,7 @@ for (i in 1:nrow(id_mat))
            ncol = ncol(id_mat) - 1,
            byrow = FALSE)
 }
+afterTime <- Sys.time()
 id_100 <- as.data.frame(id_mat)
 id_100[, 1] <- factor(id_100[, 1])
 id_100 <- id_100[sample(nrow(id_100)), ]
@@ -569,6 +571,8 @@ for(i in 1:10){
   acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
   results <- c(results, acc)
 }
+#Time for smoothing
+afterTime - beforeTime
 #Sigma 0.5
 summary(results)
 sd(results)
@@ -599,6 +603,7 @@ smoothImage <- function(grayImg) {
 
 #Gaussian Smoothing 
 # Smooth all images
+beforeTime <- Sys.time()
 for (i in 1:nrow(id_mat))
 {
   rotated <- c(id_mat[i, 2:ncol(id)])
@@ -614,6 +619,7 @@ for (i in 1:nrow(id_mat))
            ncol = ncol(id_mat) - 1,
            byrow = FALSE)
 }
+afterTime <- Sys.time()
 id_100 <- as.data.frame(id_mat)
 id_100[, 1] <- factor(id_100[, 1])
 id_100 <- id_100[sample(nrow(id_100)), ]
@@ -633,6 +639,9 @@ for(i in 1:10){
   acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
   results <- c(results, acc)
 }
+
+#Time for smoothing
+afterTime - beforeTime
 #Sigma 0.25
 summary(results)
 sd(results)
@@ -659,6 +668,9 @@ smoothImage <- function(grayImg) {
 
 #Gaussian Smoothing 
 # Smooth all images
+
+
+beforeTime <- Sys.time()
 for (i in 1:nrow(id_mat))
 {
   rotated <- c(id_mat[i, 2:ncol(id)])
@@ -674,6 +686,7 @@ for (i in 1:nrow(id_mat))
            ncol = ncol(id_mat) - 1,
            byrow = FALSE)
 }
+afterTime <- Sys.time()
 id_100 <- as.data.frame(id_mat)
 id_100[, 1] <- factor(id_100[, 1])
 id_100 <- id_100[sample(nrow(id_100)), ]
@@ -692,7 +705,73 @@ for(i in 1:10){
   acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
   results <- c(results, acc)
 }
+
+#Time for smoothing
+afterTime - beforeTime
 #Sigma 0.75
 summary(results)
 sd(results)
 
+#Gaussian Smoothing Sigma 3
+id_1Person <- id[0:12000,]
+
+id_mat <- data.matrix(id_1Person, rownames.force = NA)
+imageSize <- sqrt(ncol(id_mat) - 1)
+rotate <- function(x)
+  t(apply(x, 2, rev))
+
+smoothImage <- function(grayImg) {
+  smoothed <-
+    as.matrix(blur(
+      as.im(grayImg),
+      sigma = 3,
+      normalise = FALSE,
+      bleed = TRUE,
+      varcov = NULL
+    ))
+  return(smoothed)
+}
+
+#Gaussian Smoothing 
+# Smooth all images
+beforeTime <- Sys.time()
+for (i in 1:nrow(id_mat))
+{
+  rotated <- c(id_mat[i, 2:ncol(id)])
+  image <-
+    matrix(rotated,
+           nrow = imageSize,
+           ncol = imageSize,
+           byrow = FALSE)
+  image <- smoothImage(image)
+  id_mat[i, 2:ncol(id_mat)] <-
+    matrix(image,
+           nrow = 1,
+           ncol = ncol(id_mat) - 1,
+           byrow = FALSE)
+}
+afterTime <- Sys.time()
+id_100 <- as.data.frame(id_mat)
+id_100[, 1] <- factor(id_100[, 1])
+id_100 <- id_100[sample(nrow(id_100)), ]
+folds <- createFolds(id_100$V1, k = 10)
+data <- id_100[,]
+results = c()
+for(i in 1:10){
+  train <- data[-folds[[i]],-1]
+  test <- data[folds[[i]],-1]
+  
+  train_labels <- id_100[-folds[[i]],1] 
+  test_labels <- id_100[folds[[i]],1] 
+  
+  result <- knn(train = train, test = test, cl = train_labels, k = 1)
+  cfcMtx <- confusionMatrix(data = result, reference = test_labels)
+  acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+  results <- c(results, acc)
+}
+
+#Time for smoothing
+afterTime - beforeTime
+#Sigma 3
+summary(results)
+sd(results)
