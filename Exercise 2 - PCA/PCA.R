@@ -686,13 +686,13 @@ for (i in 1:10) {
 
 #2.4.3
 
-id_pca <- prcomp(id[, -1], center = TRUE, scale = TRUE)
+id_pca <- prcomp(id[, -1], center = TRUE, scale = FALSE)
 
 for (cipherNumber in 1:10) {
   trunc <- id_pca$x[-400 + cipherNumber * 400 + 1, ] %*%
     t(id_pca$rotation[, ])
   trunc <- scale(trunc, center = -1 * id_pca$center, scale = FALSE)
-  trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
+#  trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
   
   image <-
     matrix(trunc,
@@ -706,12 +706,12 @@ for (cipherNumber in 1:10) {
 }
 
 # 2.4.4
-id_pca <- prcomp(id[, -1], center = TRUE, scale = TRUE)
+id_pca <- prcomp(id[, -1], center = TRUE, scale = FALSE)
 cumsum(id_pca$sdev / totalvar)
 #80 percent variance
 for (cipherNumber in 1:10) {
-  trunc <- id_pca$x[-400 + cipherNumber * 400 + 1, 1:indexFor80pct] %*%
-    t(id_pca$rotation[, 1:indexFor80pct])
+  trunc <- id_pca$x[-400 + cipherNumber * 400 + 1, 1:72] %*%
+    t(id_pca$rotation[, 1:72])
   trunc <- scale(trunc, center = -1 * id_pca$center, scale = FALSE)
   trunc <- ((trunc - min(trunc)) / (max(trunc) - min(trunc)))
   
