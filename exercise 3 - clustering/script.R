@@ -11,7 +11,7 @@ train_labels <- trainDataSet[1 : (nrow(trainDataSet)),1]
 
 testDataSet <- as.data.frame(id[2])
 test_set <- testDataSet[ 1 : nrow(testDataSet) ,2:ncol(testDataSet)]
-test_labels <- dataset[  1 : nrow(testDataSet) ,1]
+test_labels <- testDataSet[  1 : nrow(testDataSet) ,1]
 
 # id_mat <- data.matrix(df, rownames.force = NA)
 # 
@@ -40,7 +40,7 @@ set.seed(2345)
 cipher_cluster <- c()
 label_cluster <- c()
 
-clusters <- 199
+clusters <- 50
 for( i in 0:9) {
   single_cipher_data <- train_set[ train_labels == i ,]
   clusterData <- kmeans(single_cipher_data, clusters)
@@ -92,3 +92,38 @@ table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
 table$prop.tbl
 afterTime-beforeTime
 sum(diag(table$prop.tbl))
+
+
+
+# 3.2
+?hclust
+data_to_cluster <- c()
+for( i in 0:9){
+  tmp <- train_set[(i*200+1):(i*200+5),]
+  data_to_cluster <- rbind(data_to_cluster,tmp)
+}
+  
+dendr <- hclust(dist(data_to_cluster))
+plot(dendr)
+
+
+#3.2.2
+
+set.seed(2345)
+
+cipher_cluster <- c()
+label_cluster <- c()
+
+clusters <- 5
+for( i in 0:9) {
+  single_cipher_data <- train_set[ train_labels == i ,]
+  clusterData <- kmeans(single_cipher_data, clusters)
+  cipher_cluster[[i + 1]] <- clusterData$centers
+  label_cluster[[i + 1]] <- c(1:clusters)*0 + i
+}
+
+train_lab <- factor(unlist(label_cluster))
+train_dat <- do.call(rbind, cipher_cluster)
+
+dendr <- hclust(dist(train_dat))
+plot(dendr,labels=train_lab)
