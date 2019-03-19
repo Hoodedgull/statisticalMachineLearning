@@ -13,7 +13,7 @@ testDataSet <- as.data.frame(id[2])
 test_set <- testDataSet[ 1 : nrow(testDataSet) ,2:ncol(testDataSet)]
 test_labels <- testDataSet[  1 : nrow(testDataSet) ,1]
 
-# id_mat <- data.matrix(df, rownames.force = NA)
+# id_mat <- data.matrix(testDataSet, rownames.force = NA)
 # 
 # rotate <- function(x)
 #   t(apply(x, 2, rev))
@@ -24,7 +24,7 @@ test_labels <- testDataSet[  1 : nrow(testDataSet) ,1]
 #   rotated <- c(id_mat[-200 + i * 200 + 1, 2:ncol(id_mat)])
 #   rotated <-
 #     ((rotated - min(rotated)) / (max(rotated) - min(rotated)))
-#   
+# 
 #   image <-
 #     matrix(rotated,
 #            nrow = imageSize,
@@ -32,7 +32,7 @@ test_labels <- testDataSet[  1 : nrow(testDataSet) ,1]
 #            byrow = FALSE)
 #   image <- rotate(image)
 #   image(image,  zlim = c(0, 1), col = gray(0:100 / 100))
-#  
+# 
 # }
 
 set.seed(2345)
@@ -127,3 +127,24 @@ train_dat <- do.call(rbind, cipher_cluster)
 
 dendr <- hclust(dist(train_dat))
 plot(dendr,labels=train_lab)
+
+
+#3.3
+accuracydata <- c()
+precisondata <- c()
+recalldata <- c()
+kdata <- c()
+ldata <- c()
+f1score <- c()
+for(i in 0:6){
+  k <- i*2+1 
+  for(j in 1:k){
+    predictions <- knn( ??????????? k =k, l = j)
+    
+    #calc prec and recall
+    
+    #store data in data arrays
+  }
+}
+
+# plot deliciuous data
