@@ -94,6 +94,53 @@ afterTime-beforeTime
 sum(diag(table$prop.tbl))
 
 
+cipher_cluster <- c()
+label_cluster <- c()
+
+
+clusters <- 10
+for( i in 0:9) {
+  single_cipher_data <- train_set[ train_labels == i ,]
+  clusterData <- kmeans(single_cipher_data, clusters)
+  cipher_cluster[[i + 1]] <- clusterData$centers
+  label_cluster[[i + 1]] <- c(1:clusters)*0 + i
+}
+
+train_lab <- factor(unlist(label_cluster))
+train_dat <- do.call(rbind, cipher_cluster)
+
+# KNN with 10 clusters
+beforeTime <- Sys.time()
+res <- knn(train = train_dat,test = test_set,cl = train_lab,k = 3)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
+
+cipher_cluster <- c()
+label_cluster <- c()
+
+
+clusters <- 25
+for( i in 0:9) {
+  single_cipher_data <- train_set[ train_labels == i ,]
+  clusterData <- kmeans(single_cipher_data, clusters)
+  cipher_cluster[[i + 1]] <- clusterData$centers
+  label_cluster[[i + 1]] <- c(1:clusters)*0 + i
+}
+
+train_lab <- factor(unlist(label_cluster))
+train_dat <- do.call(rbind, cipher_cluster)
+
+# KNN with 25 clusters
+beforeTime <- Sys.time()
+res <- knn(train = train_dat,test = test_set,cl = train_lab,k = 3)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
 
 
 cipher_cluster <- c()
@@ -216,7 +263,7 @@ sum(diag(table$prop.tbl))
 cipher_cluster <- c()
 label_cluster <- c()
 
-clusters <- 200
+clusters <- 199
 for( i in 0:9) {
   single_cipher_data <- train_set[ train_labels == i ,]
   clusterData <- kmeans(single_cipher_data, clusters)
@@ -227,7 +274,7 @@ for( i in 0:9) {
 train_lab <- factor(unlist(label_cluster))
 train_dat <- do.call(rbind, cipher_cluster)
 
-# KNN with 200 clusters
+# KNN with 199 clusters
 beforeTime <- Sys.time()
 res <- knn(train = train_dat,test = test_set,cl = train_lab,k = 3)
 afterTime <- Sys.time()
@@ -325,16 +372,106 @@ beforeTime <- Sys.time()
 res <- knn(train = train_dat,test = test_set,cl = train_lab,k = 3)
 afterTime <- Sys.time()
 table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
-table$prop.tbl
 afterTime-beforeTime
 sum(diag(table$prop.tbl))
+
+
+cipher_cluster <- c()
+label_cluster <- c()
+
+clusters <- 1500
+for( i in 0:9) {
+  single_cipher_data <- train_set[ train_labels == i ,]
+  clusterData <- kmeans(single_cipher_data, clusters)
+  cipher_cluster[[i + 1]] <- clusterData$centers
+  label_cluster[[i + 1]] <- c(1:clusters)*0 + i
+}
+
+train_lab <- factor(unlist(label_cluster))
+train_dat <- do.call(rbind, cipher_cluster)
+
+# KNN with 1500 clusters
+beforeTime <- Sys.time()
+res <- knn(train = train_dat,test = test_set,cl = train_lab,k = 3)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
+
+
+cipher_cluster <- c()
+label_cluster <- c()
+
+clusters <- 1000
+for( i in 0:9) {
+  single_cipher_data <- train_set[ train_labels == i ,]
+  clusterData <- kmeans(single_cipher_data, clusters)
+  cipher_cluster[[i + 1]] <- clusterData$centers
+  label_cluster[[i + 1]] <- c(1:clusters)*0 + i
+}
+
+train_lab <- factor(unlist(label_cluster))
+train_dat <- do.call(rbind, cipher_cluster)
+# KNN with 1000 clusters
+beforeTime <- Sys.time()
+res <- knn(train = train_dat,test = test_set,cl = train_lab,k = 3)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
+
+cipher_cluster <- c()
+label_cluster <- c()
+
+clusters <- 500
+for( i in 0:9) {
+  single_cipher_data <- train_set[ train_labels == i ,]
+  clusterData <- kmeans(single_cipher_data, clusters)
+  cipher_cluster[[i + 1]] <- clusterData$centers
+  label_cluster[[i + 1]] <- c(1:clusters)*0 + i
+}
+
+train_lab <- factor(unlist(label_cluster))
+train_dat <- do.call(rbind, cipher_cluster)
+# KNN with 500 clusters
+beforeTime <- Sys.time()
+res <- knn(train = train_dat,test = test_set,cl = train_lab,k = 3)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
+
+
+cipher_cluster <- c()
+label_cluster <- c()
+
+clusters <- 50
+for( i in 0:9) {
+  single_cipher_data <- train_set[ train_labels == i ,]
+  clusterData <- kmeans(single_cipher_data, clusters)
+  cipher_cluster[[i + 1]] <- clusterData$centers
+  label_cluster[[i + 1]] <- c(1:clusters)*0 + i
+}
+
+train_lab <- factor(unlist(label_cluster))
+train_dat <- do.call(rbind, cipher_cluster)
+# KNN with 50 clusters
+beforeTime <- Sys.time()
+res <- knn(train = train_dat,test = test_set,cl = train_lab,k = 3)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
 
 # KNN with no clustering 
 beforeTime <- Sys.time()
 res <- knn(train = train_set,test = test_set,cl = train_labels,k = 3)
 afterTime <- Sys.time()
 table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
-table$prop.tbl
 afterTime-beforeTime
 sum(diag(table$prop.tbl))
 
