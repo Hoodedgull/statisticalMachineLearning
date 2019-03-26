@@ -93,9 +93,92 @@ table$prop.tbl
 afterTime-beforeTime
 sum(diag(table$prop.tbl))
 
+#########################################################
+#####################3.1.2###############################
+#########################################################
+dataset <- do.call(rbind,id)
+dataset <- as.data.frame(dataset)
+
+folds <- createFolds(dataset$V1, k = 10)
+
+results = c()
+for(i in 1:10){
+  train <- dataset[-folds[[i]],-1]
+  test <- dataset[folds[[i]],-1]
+  
+  train_labels <- dataset[-folds[[i]],1] 
+  test_labels <- dataset[folds[[i]],1] 
+
+  
+  
+  result <- knn(train = train, test = test, cl = train_labels, k = 21)
+  cfcMtx <- confusionMatrix(data = result, reference = test_labels)
+  acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+  results <- c(results, acc)
+}
 
 
-# 3.2
+#3.1.3
+id <- do.call(rbind,idList[1:30])
+id <- as.data.frame(id)
+trainDataSet <- as.data.frame(id[1:30000,])
+
+
+train_set <- trainDataSet[1 : (nrow(trainDataSet)),2:ncol(trainDataSet)]
+train_labels <- trainDataSet[1 : (nrow(trainDataSet)),1]
+
+testDataSet <- as.data.frame(id[30001:60000,])
+test_set <- testDataSet[ 1 : nrow(testDataSet) ,2:ncol(testDataSet)]
+test_labels <- testDataSet[  1 : nrow(testDataSet) ,1]
+
+
+cipher_cluster <- c()
+label_cluster <- c()
+
+clusters <- 2000
+for( i in 0:9) {
+  single_cipher_data <- train_set[ train_labels == i ,]
+  clusterData <- kmeans(single_cipher_data, clusters)
+  cipher_cluster[[i + 1]] <- clusterData$centers
+  label_cluster[[i + 1]] <- c(1:clusters)*0 + i
+}
+
+train_lab <- factor(unlist(label_cluster))
+train_dat <- do.call(rbind, cipher_cluster)
+
+# KNN with 2000 clusters
+beforeTime <- Sys.time()
+res <- knn(train = train_dat,test = test_set,cl = train_lab,k = 3)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+table$prop.tbl
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
+# KNN with no clustering 
+beforeTime <- Sys.time()
+res <- knn(train = train_set,test = test_set,cl = train_labels,k = 3)
+afterTime <- Sys.time()
+table <- CrossTable(x= test_labels,y= res,prop.chisq=FALSE)
+table$prop.tbl
+afterTime-beforeTime
+sum(diag(table$prop.tbl))
+
+
+
+
+# 3.2.1
+id <- idList[15:16]
+trainDataSet <- as.data.frame(id[1])
+
+
+train_set <- trainDataSet[1 : (nrow(trainDataSet)),2:ncol(trainDataSet)]
+train_labels <- trainDataSet[1 : (nrow(trainDataSet)),1]
+
+testDataSet <- as.data.frame(id[2])
+test_set <- testDataSet[ 1 : nrow(testDataSet) ,2:ncol(testDataSet)]
+test_labels <- testDataSet[  1 : nrow(testDataSet) ,1]
+
 ?hclust
 data_to_cluster <- c()
 for( i in 0:9){
