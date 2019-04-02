@@ -62,6 +62,8 @@ attributes <- as.data.frame(attributes)
 summary(attributes)
 attribute_labels <- factor(dataset_shuffle[, 1])
 
+plot(x=0,y=0, xlim= c(-10,10),ylim=c(0,0.5), type='n')
+colors = rainbow(5)
 for (pca in 1:5) {
   ent <- calcEntropy(attributes[, ], attribute_labels[])
   IG <- c()
@@ -69,11 +71,11 @@ for (pca in 1:5) {
   for (res in-100:100) {
     step <- res / 10
     DP <- c(DP, step)
-    inputdata1 <- attributes[attributes[2] < step, ]
-    inputlabels1 <- attribute_labels[attributes[2] < step]
+    inputdata1 <- attributes[attributes[pca] < step, ]
+    inputlabels1 <- attribute_labels[attributes[pca] < step]
     
-    inputdata2 <- attributes[attributes[2] >= step, ]
-    inputlabels2 <- attribute_labels[attributes[2] >= step]
+    inputdata2 <- attributes[attributes[pca] >= step, ]
+    inputlabels2 <- attribute_labels[attributes[pca] >= step]
     
     IG <-
       c(
@@ -90,10 +92,10 @@ for (pca in 1:5) {
   }
   
   summary(IG)
-  plot(DP, IG)
+  lines(DP, IG,col=colors[pca])
   
 }
-
+legend(x = -10,y=0.5,legend = c("pc1","pc2","pc3","pc4","pc5"),col = colors,lty = 1)
 
 
 
