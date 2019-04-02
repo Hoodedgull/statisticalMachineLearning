@@ -10,10 +10,18 @@ dataset_shuffle <- dataset[sample(nrow(dataset)), ]
 
 calcEntropy <- function(inputdata, inputlabels){
   entropy <- 0
+  if (nrow(inputdata) == 0){
+    return(0)
+  }
   for (i in 0:9) {
     cipherdata <- inputdata[(inputlabels == i),]
-    p <- nrow(cipherdata)/nrow(inputdata)     
+    p <- nrow(cipherdata)/nrow(inputdata)  
+    if (p== 0){
+      entropy <- entropy
+    }else{
+      
     entropy <- entropy + ((-p)*log2(p))
+    }
   }
   return(entropy)
 }
@@ -48,23 +56,17 @@ DP <- c()
 for(res in -100:100){
   step <- res/10
   DP <- c(DP,step)
-  inputdata1 <- attributes[attributes$PC1 < step,]
-  inputlabels1 <- attribute_labels[attributes$PC1 < step]
+  inputdata1 <- attributes[attributes$PC2 < step,]
+  inputlabels1 <- attribute_labels[attributes$PC2 < step]
 
-  inputdata2 <- attributes[attributes$PC1 >= step,]
-  inputlabels2 <- attribute_labels[attributes$PC1 >= step]
+  inputdata2 <- attributes[attributes$PC2 >= step,]
+  inputlabels2 <- attribute_labels[attributes$PC2 >= step]
 
   IG <- c(IG,calcInformationGain(inputdata1,inputlabels1,inputdata2, inputlabels2, attributes,attribute_labels))
 }
 
-
-entropy <- 0
-for (i in 0:9) {
-  cipherdata <- attributes[ (attribute_labels == 1) ,]
-  p <- nrow(cipherdata)/nrow(attributes)     
-  entropy <- entropy + ((-p)*log2(p))
-}
-
+summary(IG)
+plot(DP,IG)
 
 
 
