@@ -530,6 +530,7 @@ id$V1 <- factor(id$V1)
 
 #ALLLLL Persons in!
 id_shuffle <- id[sample(nrow(id)),]
+
 train <- id_shuffle[0:3000,-1]
 test <- id_shuffle[3001:6000,-1]
 train_labels <- id_shuffle[0:3000,1]
@@ -587,23 +588,86 @@ for(i in 0:6){
 
 # plot deliciuous data
 plot(  recalldata)
-plot(x=kdata,  y=recalldata)
-plot(  precisondata)
+plot(x=kdata,  y=precisondata)
+plot(  precisondata[26:36])
 plot(x=recalldata,  y=precisondata)
-?plot
+#?plot
 plot(0,0,xlim = c(0,1),ylim = c(0.8,1),type = "n",xlab = "recall", ylab = "precision")
 
 cl <- rainbow(6)
-prev<-0
+prev<-1
 for(i in 1:6){
  
   k <- i*2+1
   start <- prev+1
   end <- prev+k
+  print(c(start,end))
   recData <- recalldata[start:end]
   precData <- precisondata[start:end]
+  #?lines
   lines(x=recData,  y=precData,col = cl[i],type = 'b')
-  prev <- prev + k
+  prev <- end
 }
 legend("topleft", legend = c(3,5,7,9,11,13), col=cl, pch=1)
 
+
+# DIsjunckt
+id_shuffle <- id
+
+train <- id_shuffle[0:3000,-1]
+test <- id_shuffle[3001:6000,-1]
+train_labels <- id_shuffle[0:3000,1]
+test_labels <- id_shuffle[3001:6000,1]
+
+
+accuracydata <- c()
+precisondata <- c()
+recalldata <- c()
+kdata <- c()
+ldata <- c()
+f1score <- c()
+for(i in 0:6){
+  k <- i*2+1 
+  for(j in 1:k){
+    predictions <- knn(train = train, test = test, cl = train_labels, k =k, l = j)
+    summary(predictions)
+    summary(test_labels)
+    #calc prec and recall
+    scores <- f1_score(predictions, test_labels)
+    #store data in data arrays
+    precisondata <- c(precisondata, scores[1])
+    recalldata <- c(recalldata, scores[2])
+    f1score <- c(f1score, scores[3])
+    kdata <- c(kdata,k)
+    ldata <- c(ldata,j)
+    print(c(k,j))
+  }
+}
+
+# plot deliciuous data
+plot(  recalldata)
+plot(x=kdata,  y=precisondata)
+plot(  precisondata[26:36])
+plot(x=recalldata,  y=precisondata)
+#?plot
+plot(0,0,xlim = c(0,0.6),ylim = c(0.5,0.75),type = "n",xlab = "recall", ylab = "precision")
+
+cl <- rainbow(6)
+maxFValue <- c()
+prev<-0
+for(i in 0:6){
+  
+  k <- i*2+1
+  start <- prev+1
+  end <- prev+k
+  maxFValue <- c(maxFValue,max((f1score[start:end])))
+  print(c(start,end))
+  recData <- recalldata[start:end]
+  precData <- precisondata[start:end]
+  #?lines
+  lines(x=recData,  y=precData,col = cl[i],type = 'b')
+  prev <- end
+}
+legend("topleft", legend = c(3,5,7,9,11,13), col=cl, pch=1)
+
+plot(maxFValue,type='b', xlab="k")
