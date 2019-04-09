@@ -273,7 +273,7 @@ for (i in 1:10) {
   startTime <- proc.time()
   
   ###CREATE RANDOM FOREST###
-  m <- randomForest(data_train, data_train_labels, ntree = 500)
+  m <- randomForest(data_train, data_train_labels, ntree = 3)
   
   computationTime <<- proc.time() - startTime
   
@@ -314,5 +314,77 @@ print(c("The Standard Deviation ", sd(resultsList)))
 print(c("The Random Forest Generation runtime ", mean(TreeRuntimeList)))
 
 print(c("The Prediction runtime ", mean(PredictionRuntimeList)))
+
+####################################
+####################################
+####################################
+  library(randomForest)
+  set.seed(2345)
+  
+  
+  folds <- createFolds(dataset$V1, k = 10)
+  
+  resultsList <- c()
+  TreeRuntimeList <- c()
+  PredictionRuntimeList <- c()
+  
+  maxnodes <- 10000
+  for (i in 1:10) {
+    
+    #Without headers
+    data_test <- dataset[folds[[i]],-1]
+    data_train <- dataset[-folds[[i]],-1]
+    
+    #Get the labels
+    data_test_labels <- factor(dataset[folds[[i]], 1])
+    
+    #Get the labels
+    data_train_labels <- factor(dataset[-folds[[i]], 1])
+    
+    ####Compute ############################
+    startTime <- proc.time()
+    
+    ###CREATE RANDOM FOREST###
+    m <- randomForest(data_train, data_train_labels, ntree = 10)
+    
+    computationTime <<- proc.time() - startTime
+    
+    TreeRuntimeList[i] <- computationTime
+    
+    #######################################
+    
+    ####Compute ############################
+    startTime <- proc.time()
+    
+    ###PREDICT WITH RANDOM FOREST###
+    data_test_pred <- predict(m, data_test, type = "response")
+    
+    computationTime <<- proc.time() - startTime
+    
+    PredictionRuntimeList[i] <- computationTime
+    
+    #######################################
+    
+    # Matrix
+    cf <- confusionMatrix(data_test_labels, data_test_pred)
+    
+    print(c("Precision: ", i , sum(diag(
+      cf$table / sum(cf$table)
+    ))))
+    
+    resultsList[i] <- sum(diag(cf$table / sum(cf$table)))
+  }
+  
+  
+  
+  #Mean
+  print(c("The mean ", mean(resultsList)))
+  
+  #Standard Deviation
+  print(c("The Standard Deviation ", sd(resultsList)))
+  
+  print(c("The Random Forest Generation runtime ", mean(TreeRuntimeList)))
+  
+  print(c("The Prediction runtime ", mean(PredictionRuntimeList)))
 
 
