@@ -123,12 +123,152 @@ test_data <- Attributes[3601:4000, ]
 train_label <- dataset_shuffle[1:3600, 1]
 test_label <- dataset_shuffle[3601:4000, 1]
 
+
+
 m <- C5.0(train_data, factor(train_label))
 plot(m)
 
 
-#4.1.3 Ish
-c5prediction <- predict(m, test_data)
-crosstable <- CrossTable(test_label, c5prediction, prop.chisq = FALSE)
-crosstable$prop.tbl
-sum(diag(crosstable$prop.tbl))
+#4.1.3
+set.seed(2345)
+
+folds <- createFolds(dataset$V1, k = 10)
+
+resultsList <- c()
+TreeRuntimeList <- c()
+PredictionRuntimeList <- c()
+
+
+for (i in 1:10) {
+  
+  #Without headers
+  data_test <- dataset[folds[[i]],-1]
+  data_train <- dataset[-folds[[i]],-1]
+  
+  #Get the labels
+  data_test_labels <- factor(dataset[folds[[i]], 1])
+  
+  #Get the labels
+  data_train_labels <- factor(dataset[-folds[[i]], 1])
+  
+  ####Compute ############################
+  startTime <- proc.time()
+  
+  m <- C5.0(data_train, factor(data_train_labels))
+  
+  computationTime <<- proc.time() - startTime
+  
+  TreeRuntimeList[i] <- computationTime
+  
+  #######################################
+  
+  ####Compute ############################
+  startTime <- proc.time()
+  
+  data_test_pred <- predict(m, data_test)
+  
+  computationTime <<- proc.time() - startTime
+  
+  PredictionRuntimeList[i] <- computationTime
+  
+  #######################################
+  
+  # Matrix
+  cf <- confusionMatrix(data_test_labels, data_test_pred)
+  
+  print(c("Precision: ", i , sum(diag(
+    cf$table / sum(cf$table)
+  ))))
+  
+  resultsList[i] <- sum(diag(cf$table / sum(cf$table)))
+}
+
+
+
+#Mean
+print(c("The mean ", mean(resultsList)))
+
+#Standard Deviation
+print(c("The Standard Deviation ", sd(resultsList)))
+
+print(c("The Decision Tree Training runtime ", mean(TreeRuntimeList)))
+
+print(c("The Prediction runtime ", mean(PredictionRuntimeList)))
+
+
+
+##################################################################
+##################################################################
+##################################################################
+##################################################################
+#4.2.1
+library(randomForest)
+set.seed(2345)
+
+
+folds <- createFolds(dataset$V1, k = 10)
+
+resultsList <- c()
+TreeRuntimeList <- c()
+PredictionRuntimeList <- c()
+
+
+for (i in 1:10) {
+  
+  #Without headers
+  data_test <- dataset[folds[[i]],-1]
+  data_train <- dataset[-folds[[i]],-1]
+  
+  #Get the labels
+  data_test_labels <- factor(dataset[folds[[i]], 1])
+  
+  #Get the labels
+  data_train_labels <- factor(dataset[-folds[[i]], 1])
+  
+  ####Compute ############################
+  startTime <- proc.time()
+  
+  ###CREATE RANDOM FOREST###
+  m <- randomForest(data_train, data_train_labels, ntree = 500)
+  
+  computationTime <<- proc.time() - startTime
+  
+  TreeRuntimeList[i] <- computationTime
+  
+  #######################################
+  
+  ####Compute ############################
+  startTime <- proc.time()
+  
+  ###PREDICT WITH RANDOM FOREST###
+  data_test_pred <- predict(m, data_test, type = "response")
+  
+  computationTime <<- proc.time() - startTime
+  
+  PredictionRuntimeList[i] <- computationTime
+  
+  #######################################
+  
+  # Matrix
+  cf <- confusionMatrix(data_test_labels, data_test_pred)
+  
+  print(c("Precision: ", i , sum(diag(
+    cf$table / sum(cf$table)
+  ))))
+  
+  resultsList[i] <- sum(diag(cf$table / sum(cf$table)))
+}
+
+
+
+#Mean
+print(c("The mean ", mean(resultsList)))
+
+#Standard Deviation
+print(c("The Standard Deviation ", sd(resultsList)))
+
+print(c("The Random Forest Generation runtime ", mean(TreeRuntimeList)))
+
+print(c("The Prediction runtime ", mean(PredictionRuntimeList)))
+
+
