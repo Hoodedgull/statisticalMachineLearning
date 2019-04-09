@@ -102,15 +102,59 @@ legend(x = -10,y=0.5,legend = c("pc1","pc2","pc3","pc4","pc5"),col = colors,lty 
 
 
 #4.1.2 With basic digit data as basis???
-train_data <- dataset_shuffle[1:3600, -1]
-test_data <- dataset_shuffle[3601:4000, -1]
+dataset <- as.data.frame(id)
+set.seed(123)
+dataset_shuffle <- dataset[sample(nrow(dataset)),]
 
-train_label <- dataset_shuffle[1:3600, 1]
-test_label <- dataset_shuffle[3601:4000, 1]
+id_pca <- prcomp(dataset_shuffle[,-1], center = TRUE, scale = TRUE)
+
+attributes <- id_pca$x[, 1:5]
+attributes <- as.data.frame(attributes)
+summary(attributes)
+attribute_labels <- factor(dataset_shuffle[, 1])
+
+train_data <- attributes[1:3600, ]
+test_data <- attributes[3601:4000, ]
+
+train_label <- attribute_labels[1:3600]
+test_label <- attribute_labels[3601:4000]
+
+trainDataWithLabel <- cbind(train_label,train_data)
 
 
-m <- C5.0(train_data, factor(train_label))
-plot(m)
+# Plotting Classification Trees with the plot.rpart and rattle pckages
+
+library(rpart)				        # Popular decision tree algorithm
+library(rattle)					# Fancy tree plot
+library(rpart.plot)				# Enhanced tree plots
+library(RColorBrewer)				# Color selection for fancy tree plot
+library(party)					# Alternative decision tree algorithm
+library(partykit)				# Convert rpart object to BinaryTree
+library(caret)					# Just a data source for this script
+# but probably one of the best R packages ever. 
+
+
+# Make big tree
+form <- as.formula(train_label ~ .)
+#-------------------------------------------------------------------
+tree.2 <- rpart(form,trainDataWithLabel)			# A more reasonable tree
+prp(tree.2,extra=1, tweak=1.5, fallen.leaves = FALSE, under = TRUE)                                     # A fast plot													
+?fancyRpartPlot(tree.2)				# A fancy plot from rattle
+#
+#-------------------------------------------------------------------
+# Plot a tree built with RevoScaleR
+# Construct a model formula
+sdNames <- names(segmentationData)
+X <- as.vector(sdNames[-c(1,2,3)])
+form <- as.formula(paste("Class","~", paste(X,collapse="+")))
+# Run the model
+rx.tree <- rxDTree(form, data = segmentationData,maxNumBins = 100,
+                   minBucket = 10,maxDepth = 5,cp = 0.01, xVal = 0)
+# Plot the tree						
+prp(rxAddInheritance(rx.tree))
+fancyRpartPlot(rxAddInheritance(rx.tree))
+
+
 
 #4.1.2 With PCA as basis????
 id_pca <- prcomp(dataset_shuffle[,-1], center = TRUE, scale = TRUE)
@@ -123,9 +167,9 @@ test_data <- Attributes[3601:4000, ]
 train_label <- dataset_shuffle[1:3600, 1]
 test_label <- dataset_shuffle[3601:4000, 1]
 
-
-
-m <- C5.0(train_data, factor(train_label))
+?C5.0Control
+m <- C5.0(train_data, factor(train_label), control=C5.0Control(noGlobalPruning = FALSE))
+summary(m)
 plot(m)
 
 
