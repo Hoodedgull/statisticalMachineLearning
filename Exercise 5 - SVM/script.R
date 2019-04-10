@@ -8,7 +8,7 @@ library("kernlab")
 
 #load("idList-corner-100.Rdata")
 
-load("idList-co-100.Rdata")
+load("idList-co-100.Rda")
 
 
 prepareData <- function(dataset,startRow, endRow){
