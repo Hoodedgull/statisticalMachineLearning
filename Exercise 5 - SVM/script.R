@@ -22,8 +22,9 @@ prepareData <- function(dataset,startRow, endRow){
 ###########5.2.1#############################
 
 result <- c()
-
-dataset <- prepareData(dataset = idList, startRow = 1, endRow = 2)
+TreeRuntime <- 0
+PredictionRuntime <- 0
+dataset <- prepareData(dataset = idList, startRow = 1, endRow = 10)
 
 dataset_shuffled <- shuffleAndSplitData(dataset)
 
@@ -33,11 +34,21 @@ data_Test <- dataset_shuffled$test_set
 
 form <- as.formula(dataset_shuffled$train_set_labels ~ .)
 
-SVM_model <- ksvm(form, data_Train, kernel = "rbfdot", c = 1)
+startTime <- proc.time()
 
+SVM_model <- ksvm(form, data_Train, kernel = "rbfdot", C = 1)
+
+computationTime <<- proc.time() - startTime
+
+TreeRuntime <- computationTime
+
+startTime <- proc.time()
 
 data_Test_prediction <- predict(SVM_model,data_Test, type = "response")
 
+computationTime <<- proc.time() - startTime
+
+PredictionRuntime <- computationTime
 
 cf <- confusionMatrix(dataset_shuffled$test_set_labels, data_Test_prediction)
 
