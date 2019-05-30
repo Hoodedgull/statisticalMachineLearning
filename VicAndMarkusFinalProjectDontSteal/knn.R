@@ -20,15 +20,17 @@ measure_acc <- function(true, predicted){
   return(count/length(true))
   
 }
-
-train_data <- data[1:(5*2000),-1]
-train_labels <- data[1:(5*2000),1]
-test_data <- data[(5*2000+1):(10*2000),-1]
-test_labels<- data[(5*2000+1):(10*2000),1]
+#shuffle
+data_shuffled <- data[sample(nrow(data)),]
+train_data <- data_shuffled[1:(5*2000),-1]
+train_labels <- data_shuffled[1:(5*2000),1]
+test_data <- data_shuffled[(5*2000+1):(10*2000),-1]
+test_labels<- data_shuffled[(5*2000+1):(10*2000),1]
 
 #Find best k
 acc_list <- c()
 time_list <- c()
+klist <- c(1, 2, 3, 5, 7, 10, 15, 20, 30, 50, 75, 100, 150, 200)
 for( k in c(1, 2, 3, 5, 7, 10, 15, 20, 30, 50, 75, 100, 150, 200)){
   
 
@@ -40,6 +42,7 @@ acc_list <- c(acc_list,acc)
 time_list <- c(time_list, time$toc-time$tic)
 }
 
+plot(acc_list/klist)
 
 tic("pca")
 pca_result <- prcomp(data[,-1], center = TRUE, scale = TRUE)
@@ -75,3 +78,4 @@ for( var in c(10,20,30,40,50,60,70,80,90,99)){
   acc_list <- c(acc_list,acc)
   time_list <- c(time_list, time$toc-time$tic)
 }
+
