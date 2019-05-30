@@ -1,7 +1,7 @@
 library(class) #For knn
 library(tictoc) #For timing
 
-
+load("idList-cornered-100.Rdata")
 data <- as.data.frame(idList[1])
 for(i in 2:79){
   aPerson <- as.data.frame(idList[i])
@@ -40,17 +40,38 @@ acc_list <- c(acc_list,acc)
 time_list <- c(time_list, time$toc-time$tic)
 }
 
+
 tic("pca")
 pca_result <- prcomp(data[,-1], center = TRUE, scale = TRUE)
 toc()
 
 #plot(pca_result$sdev[1:100])
-#plot(cumsum(pca_result$sdev)/sum(pca_result$sdev))
+plot(cumsum(pca_result$sdev)/sum(pca_result$sdev))
 
-train_data_pca <- pca_result$x[1:(5*2000),1:65]
-test_data_pca <- pca_result$x[((5*2000)+1):(10*2000),1:65]
+find_index_for_a_pct_of_variance <- function(pca, variance_pct){
+  sum <- cumsum(pca$sdev)/sum(pca$sdev)
+  for( i in 1:length(pca$sdev)){
+    if(sum[i] >= variance_pct/100){
+      return(i)
+    }
+  }
+  
+}
 
-tic("knn")
-predicted_labels <- knn(train=train_data_pca, test = test_data_pca, cl = train_labels, k = 3)
-toc()
-measure_acc(test_labels,predicted_labels)
+
+
+#Find best pca
+acc_list <- c()
+time_list <- c()
+for( var in c(10,20,30,40,50,60,70,80,90,99)){
+  index <- find_index_for_a_pct_of_variance(pca_result, var)
+  train_data_pca <- pca_result$x[1:(5*2000),1:index]
+  test_data_pca <- pca_result$x[((5*2000)+1):(10*2000),1:index]
+  
+  tic("knn")
+  predicted_labels <- knn(train=train_data_pca, test = test_data_pca, cl = train_labels, k = somevaluek)
+  time <- toc(quiet=TRUE)
+  acc <- measure_acc(test_labels,predicted_labels)
+  acc_list <- c(acc_list,acc)
+  time_list <- c(time_list, time$toc-time$tic)
+}
