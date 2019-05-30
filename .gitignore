@@ -49,3 +49,5 @@ vignettes/*.pdf
 
 # End of https://www.gitignore.io/api/r
 exercise 3 - clustering/\.RDataTmp
+
+*.zip
