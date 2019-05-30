@@ -21,28 +21,29 @@ measure_acc <- function(true, predicted){
   
 }
 #shuffle
+split_index <- (5*2000)
 data_shuffled <- data[sample(nrow(data)),]
-train_data <- data_shuffled[1:(5*2000),-1]
-train_labels <- data_shuffled[1:(5*2000),1]
-test_data <- data_shuffled[(5*2000+1):(10*2000),-1]
-test_labels<- data_shuffled[(5*2000+1):(10*2000),1]
+train_data <- data_shuffled[1:split_index,-1]
+train_labels <- data_shuffled[1:split_index,1]
+test_data <- data_shuffled[(split_index+1):(split_index*2),-1]
+test_labels<- data_shuffled[(split_index+1):(split_index*2),1]
 
 #Find best k
 acc_list <- c()
 time_list <- c()
-klist <- c(1, 2, 3, 5, 7, 10, 15, 20, 30, 50, 75, 100, 150, 200)
-for( k in c(1, 2, 3, 5, 7, 10, 15, 20, 30, 50, 75, 100, 150, 200)){
+klist <- c(1, 3, 5, 7, 11, 15, 21, 31, 51, 75, 101, 151, 201)
+for( k in c(1, 3, 5, 7, 11, 15, 21, 31, 51, 75, 101, 151, 201)){
   
-
+print("looping")
 tic("knn")
-predicted_labels <- knn(train=train_data, test = test_data, cl = train_labels, k = 3)
+predicted_labels <- knn(train=train_data, test = test_data, cl = train_labels, k = k)
 time <- toc(quiet=TRUE)
 acc <- measure_acc(test_labels,predicted_labels)
 acc_list <- c(acc_list,acc)
 time_list <- c(time_list, time$toc-time$tic)
 }
 
-plot(acc_list/klist)
+plot(klist,acc_list, type = "o")
 
 tic("pca")
 pca_result <- prcomp(data[,-1], center = TRUE, scale = TRUE)
@@ -68,14 +69,16 @@ acc_list <- c()
 time_list <- c()
 for( var in c(10,20,30,40,50,60,70,80,90,99)){
   index <- find_index_for_a_pct_of_variance(pca_result, var)
-  train_data_pca <- pca_result$x[1:(5*2000),1:index]
-  test_data_pca <- pca_result$x[((5*2000)+1):(10*2000),1:index]
+  train_data_pca <- pca_result$x[1:(split_index),1:index]
+  test_data_pca <- pca_result$x[((split_index)+1):(split_index*2),1:index]
   
   tic("knn")
-  predicted_labels <- knn(train=train_data_pca, test = test_data_pca, cl = train_labels, k = somevaluek)
+  predicted_labels <- knn(train=train_data_pca, test = test_data_pca, cl = train_labels, k = 3)
   time <- toc(quiet=TRUE)
   acc <- measure_acc(test_labels,predicted_labels)
   acc_list <- c(acc_list,acc)
   time_list <- c(time_list, time$toc-time$tic)
 }
 
+plot(c(10,20,30,40,50,60,70,80,90,99), acc_list, type = "o" )
+plot(c(10,20,30,40,50,60,70,80,90,99), time_list, type = "o" )
