@@ -73,7 +73,7 @@ acc_list <- c()
 tacc_list <- c()
 ttime_list <- c()
 ptime_list <- c()
-for (neurons in c(1, 5, 10, 25, 50, 100)) {
+for (neurons in c(10,20, 25, 30,35,40,45,50,,55,60,65,70,75,80,85,90,95, 100)) {
  tic("train")
    nn <-
     mlp(
@@ -84,7 +84,7 @@ for (neurons in c(1, 5, 10, 25, 50, 100)) {
       initFunc = "Randomize_Weights",
       initFuncParams = c(-0.3, 0.3),
       learnFunc = "Std_Backpropagation",
-      learnFuncParams = c(0.01, 0),
+      learnFuncParams = c(0.05, 0),
       updateFunc = "Topological_Order",
       updateFuncParams = c(0),
       hiddenActFunc = "Act_Logistic",
@@ -96,11 +96,11 @@ for (neurons in c(1, 5, 10, 25, 50, 100)) {
       pruneFuncParams = NULL
     )
   ttime <-  toc()
-  ttime_list <- c(ttime_list,ttime)
+  ttime_list <- c(ttime_list, ttime$toc-ttime$tic)
   tic("predict")
   predictions <- predict(nn, test_data)
   ptime <- toc()
-  ptime_list <- c(ptime_list,ptime)
+  ptime_list <- c(ptime_list, ptime$toc-ptime$tic)
   
   acc <- nnacc_from_william(predictions, test_labels)
   acc_list <- c(acc_list,acc)
@@ -139,18 +139,18 @@ for (epochs in c(1, 5, 10, 25, 50, 100, 200, 500, 1000)) {
       pruneFuncParams = NULL
     )
   ttime <-  toc()
-  ttime_list2 <- c(ttime_list,ttime)
+  ttime_list2 <-c(ttime_list2, ttime$toc-ttime$tic)
   tic("predict")
   predictions <- predict(nn, test_data)
   ptime <- toc()
-  ptime_list2 <- c(ptime_list,ptime)
+  ptime_list2 <- c(ptime_list2, ptime$toc-ptime$tic)
   
   acc <- nnacc_from_william(predictions, test_labels)
-  acc_list2 <- c(acc_list,acc)
+  acc_list2 <- c(acc_list2,acc)
   
   tpredictions <- predict(nn, train_data)
   tacc <- nnacc_from_william(tpredictions, train_labels)
-  tacc_list2 <- c(tacc_list,tacc)
+  tacc_list2 <- c(tacc_list2,tacc)
 }
 
 
@@ -160,18 +160,18 @@ acc_list3 <- c()
 tacc_list3 <- c()
 ttime_list3 <- c()
 ptime_list3 <- c()
-for (lr in c(0.0001, 0.001, 0.01,0,05, 0.1,0.25, 0.5, 0.75, 1,2)) {
+for (lr in c(0.01,0.05, 0.1)) {
   tic("train")
   nn <-
     mlp(
       x = train_data,
       y = trainingClass[(15 * 2000 + 1):(20 * 2000), ],
       size = c(50), 
-      maxit = epochs,
+      maxit = 1000,
       initFunc = "Randomize_Weights",
       initFuncParams = c(-0.3, 0.3),
       learnFunc = "Std_Backpropagation",
-      learnFuncParams = c(0.01, 0),
+      learnFuncParams = c(lr, 0),
       updateFunc = "Topological_Order",
       updateFuncParams = c(0),
       hiddenActFunc = "Act_Logistic",
@@ -183,16 +183,16 @@ for (lr in c(0.0001, 0.001, 0.01,0,05, 0.1,0.25, 0.5, 0.75, 1,2)) {
       pruneFuncParams = NULL
     )
   ttime <-  toc()
-  ttime_list3 <- c(ttime_list,ttime)
+  ttime_list3 <- c(ttime_list3, ttime$toc-ttime$tic)
   tic("predict")
   predictions <- predict(nn, test_data)
   ptime <- toc()
-  ptime_list3 <- c(ptime_list,ptime)
+  ptime_list3 <-c(ptime_list3, ptime$toc-ptime$tic)
   
   acc <- nnacc_from_william(predictions, test_labels)
-  acc_list3 <- c(acc_list,acc)
+  acc_list3 <- c(acc_list3,acc)
   
   tpredictions <- predict(nn, train_data)
   tacc <- nnacc_from_william(tpredictions, train_labels)
-  tacc_list3 <- c(tacc_list,tacc)
+  tacc_list3 <- c(tacc_list3,tacc)
 }
