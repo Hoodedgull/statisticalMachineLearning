@@ -3,7 +3,7 @@ library(tictoc) #For timing
 
 load("idList-cornered-100.Rdata")
 data <- as.data.frame(idList[1])
-for(i in 2:79){
+for(i in 2:10){
   aPerson <- as.data.frame(idList[i])
   data <- rbind(data,aPerson)
   
@@ -46,7 +46,7 @@ time_list <- c(time_list, time$toc-time$tic)
 plot(klist,acc_list, type = "o")
 
 tic("pca")
-pca_result <- prcomp(data[,-1], center = TRUE, scale = TRUE)
+pca_result <- prcomp(data_shuffled[,-1], center = TRUE, scale = TRUE)
 toc()
 
 #plot(pca_result$sdev[1:100])
@@ -65,20 +65,21 @@ find_index_for_a_pct_of_variance <- function(pca, variance_pct){
 
 
 #Find best pca
-acc_list <- c()
-time_list <- c()
+acc_listPCA <- c()
+time_listPCA <- c()
 for( var in c(10,20,30,40,50,60,70,80,90,99)){
   index <- find_index_for_a_pct_of_variance(pca_result, var)
+  print(index)
   train_data_pca <- pca_result$x[1:(split_index),1:index]
-  test_data_pca <- pca_result$x[((split_index)+1):(split_index*2),1:index]
-  
+  test_data_pca <- pca_result$x[(split_index+1):(split_index*2),1:index]
+  print(var)
   tic("knn")
-  predicted_labels <- knn(train=train_data_pca, test = test_data_pca, cl = train_labels, k = 3)
+  predicted_labels <- knn(train=train_data_pca, test = test_data_pca, cl = train_labels, k = 5)
   time <- toc(quiet=TRUE)
   acc <- measure_acc(test_labels,predicted_labels)
-  acc_list <- c(acc_list,acc)
-  time_list <- c(time_list, time$toc-time$tic)
+  acc_listPCA <- c(acc_listPCA,acc)
+  time_listPCA <- c(time_listPCA, time$toc-time$tic)
 }
 
-plot(c(10,20,30,40,50,60,70,80,90,99), acc_list, type = "o" )
-plot(c(10,20,30,40,50,60,70,80,90,99), time_list, type = "o" )
+plot(c(10,20,30,40,50,60,70,80,90,99), acc_listPCA, type = "o" )
+plot(c(10,20,30,40,50,60,70,80,90,99), time_listPCA, type = "o" )
