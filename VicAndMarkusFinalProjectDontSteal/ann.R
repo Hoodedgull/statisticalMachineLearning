@@ -171,7 +171,8 @@ for (lr in c(0.0001, 0.001, 0.01,0,05, 0.1,0.25, 0.5, 0.75, 1,2)) {
     mlp(
       x = train_data,
       y = trainingClass[1:(split_index), ],
-      size = c(50), 
+      size = c(30), #### LOOK AT ME 
+      ### no srsly look at me before you run, thnx
       maxit = epochs,
       initFunc = "Randomize_Weights",
       initFuncParams = c(-0.3, 0.3),
