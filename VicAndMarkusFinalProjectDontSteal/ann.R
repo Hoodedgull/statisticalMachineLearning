@@ -78,7 +78,7 @@ acc_list <- c()
 tacc_list <- c()
 ttime_list <- c()
 ptime_list <- c()
-for (neurons in c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) {
+for (neurons in c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 130, 140)) {
   tic("train")
   nn <-
     mlp(
@@ -121,18 +121,18 @@ acc_list2 <- c()
 tacc_list2 <- c()
 ttime_list2 <- c()
 ptime_list2 <- c()
-for (epochs in c(1, 5, 10, 25, 50, 100, 200, 500, 1000)) {
+for (epochs in c(100, 200, 500, 1000, 1200, 1400, 1600, 1800, 2000)) {
   tic("train")
   nn <-
     mlp(
       x = train_data,
       y = trainingClass[1:(split_index), ],
-      size = c(30), 
+      size = c(50), 
       maxit = epochs,
       initFunc = "Randomize_Weights",
       initFuncParams = c(-0.3, 0.3),
       learnFunc = "Std_Backpropagation",
-      learnFuncParams = c(0.1, 0),
+      learnFuncParams = c(0.06, 0),
       updateFunc = "Topological_Order",
       updateFuncParams = c(0),
       hiddenActFunc = "Act_Logistic",
@@ -144,11 +144,11 @@ for (epochs in c(1, 5, 10, 25, 50, 100, 200, 500, 1000)) {
       pruneFuncParams = NULL
     )
   ttime <-  toc()
-  ttime_list2 <- c(ttime_list2,ttime)
+  ttime_list2 <- c(ttime_list2, ttime$toc-ttime$tic)
   tic("predict")
   predictions <- predict(nn, test_data)
   ptime <- toc()
-  ptime_list2 <- c(ptime_list2,ptime)
+  ptime_list2 <- c(ptime_list2, ptime$toc-ptime$tic)
   
   acc <- nnacc_from_william(predictions, test_labels)
   acc_list2 <- c(acc_list2,acc)
@@ -165,15 +165,15 @@ acc_list3 <- c()
 tacc_list3 <- c()
 ttime_list3 <- c()
 ptime_list3 <- c()
-for (lr in c(0.0001, 0.001, 0.01,0,05, 0.1,0.25, 0.5, 0.75, 1,2)) {
+for (lr in c(0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1)) {
   tic("train")
   nn <-
     mlp(
       x = train_data,
       y = trainingClass[1:(split_index), ],
-      size = c(30), #### LOOK AT ME 
+      size = c(50), #### LOOK AT ME 
       ### no srsly look at me before you run, thnx
-      maxit = epochs,
+      maxit = 100,
       initFunc = "Randomize_Weights",
       initFuncParams = c(-0.3, 0.3),
       learnFunc = "Std_Backpropagation",
@@ -189,11 +189,11 @@ for (lr in c(0.0001, 0.001, 0.01,0,05, 0.1,0.25, 0.5, 0.75, 1,2)) {
       pruneFuncParams = NULL
     )
   ttime <-  toc()
-  ttime_list3 <- c(ttime_list3,ttime)
+  ttime_list3 <- c(ttime_list3, ttime$toc-ttime$tic)
   tic("predict")
   predictions <- predict(nn, test_data)
   ptime <- toc()
-  ptime_list3 <- c(ptime_list3,ptime)
+  ptime_list3 <- c(ptime_list3, ptime$toc-ptime$tic)
   
   acc <- nnacc_from_william(predictions, test_labels)
   acc_list3 <- c(acc_list3,acc)

@@ -74,7 +74,7 @@ for( var in c(10,20,30,40,50,60,70,80,90,99)){
   test_data_pca <- pca_result$x[(split_index+1):(split_index*2),1:index]
   print(var)
   tic("knn")
-  predicted_labels <- knn(train=train_data_pca, test = test_data_pca, cl = train_labels, k = 5)
+  predicted_labels <- knn(train=train_data_pca, test = test_data_pca, cl = train_labels, k = 3)
   time <- toc(quiet=TRUE)
   acc <- measure_acc(test_labels,predicted_labels)
   acc_listPCA <- c(acc_listPCA,acc)
