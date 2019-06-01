@@ -202,3 +202,84 @@ for (lr in c(0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1)) {
   tacc <- nnacc_from_william(tpredictions, train_labels)
   tacc_list3 <- c(tacc_list3,tacc)
 }
+
+
+######################## Cross Validation
+#### Cross Validation
+library(class)
+library(gmodels)
+library(caret)
+time_listFolds <- c()
+folds <- createFolds(data_shuffled$X1, k = 10)
+results = c()
+for(i in 1:10){
+  print(i)
+  train <- data_shuffled[-folds[[i]],-1]
+  test <- data_shuffled[folds[[i]],-1]
+  
+  train_labels <- data_shuffled[-folds[[i]],1] 
+  test_labels <- data_shuffled[folds[[i]],1] 
+  
+  #####TRainLAbels
+  lev <- levels(as.factor(train_labels)) # Number of classes?levels
+  
+  nnTrainingClass <-
+    matrix(nrow = length(train_labels),
+           ncol = 10,
+           data = 0) # Create a list probabilities, for all labels
+  
+  for (i in 1:length(train_labels)) {
+    # Set probabilities to one for matching class
+    matchList <- match(lev, toString(train_labels[i]))
+    matchList[is.na(matchList)] <- 0
+    nnTrainingClass[i, ] <- matchList
+  }
+  
+  trainingClass <- as.data.frame(nnTrainingClass)
+  #####TEST LABELS
+  lev <- levels(as.factor(test_labels)) # Number of classes?levels
+  
+  nnTestingClass <-
+    matrix(nrow = length(test_labels),
+           ncol = 10,
+           data = 0) # Create a list probabilities, for all labels
+  
+  for (i in 1:length(test_labels)) {
+    # Set probabilities to one for matching class
+    matchList <- match(lev, toString(test_labels[i]))
+    matchList[is.na(matchList)] <- 0
+    nnTestingClass[i, ] <- matchList
+  }
+  
+  testClass <- as.data.frame(nnTestingClass)
+
+  tic("annFold")
+  nn <-
+    mlp(
+      x = train,
+      y = trainingClass,
+      size = c(50), 
+      maxit = 1800,
+      initFunc = "Randomize_Weights",
+      initFuncParams = c(-0.3, 0.3),
+      learnFunc = "Std_Backpropagation",
+      learnFuncParams = c(0.06, 0),
+      updateFunc = "Topological_Order",
+      updateFuncParams = c(0),
+      hiddenActFunc = "Act_Logistic",
+      shufflePatterns = TRUE,
+      linOut = FALSE,
+      inputsTest = NULL,
+      targetsTest = NULL,
+      pruneFunc = NULL,
+      pruneFuncParams = NULL
+    )
+  time <- toc()
+  time_listFolds <- c(time_listFolds, time$toc-time$tic)
+  predictions <- predict(nn, test)
+  cfcMtx <- confusionMatrix(factor(predictions, levels = 0:9), factor(test_labels, levels = 0:9))
+  acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+  results <- c(results, acc)
+}
+summary(results)
+sd(results)

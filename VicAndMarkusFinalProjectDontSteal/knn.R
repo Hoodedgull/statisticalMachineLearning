@@ -83,3 +83,28 @@ for( var in c(10,20,30,40,50,60,70,80,90,99)){
 
 plot(c(10,20,30,40,50,60,70,80,90,99), acc_listPCA, type = "o" )
 plot(c(10,20,30,40,50,60,70,80,90,99), time_listPCA, type = "o" )
+
+#### Cross Validation
+library(class)
+library(gmodels)
+library(caret)
+time_listFolds <- c()
+folds <- createFolds(data_shuffled$X1, k = 10)
+results = c()
+for(i in 1:10){
+  print(i)
+  train <- data_shuffled[-folds[[i]],-1]
+  test <- data_shuffled[folds[[i]],-1]
+  
+  train_labels <- data_shuffled[-folds[[i]],1] 
+  test_labels <- data_shuffled[folds[[i]],1] 
+  tic("knnFold")
+  result <- knn(train = train, test = test, cl = train_labels, k = 5)
+  time <- toc()
+  time_listFolds <- c(time_listFolds, time$toc-time$tic)
+  cfcMtx <- confusionMatrix(factor(result, levels = 0:9), factor(test_labels, levels = 0:9))
+  acc <- sum(diag(cfcMtx$table))/sum(cfcMtx$table)
+  results <- c(results, acc)
+}
+summary(results)
+sd(results)
