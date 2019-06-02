@@ -3,7 +3,7 @@ library(tictoc) #For timing
 
 load("idList-cornered-100.Rdata")
 data <- as.data.frame(idList[1])
-for(i in 2:10){
+for(i in 2:79){
   aPerson <- as.data.frame(idList[i])
   data <- rbind(data,aPerson)
   
@@ -21,7 +21,7 @@ measure_acc <- function(true, predicted){
   
 }
 #shuffle
-split_index <- (5*2000)
+split_index <- (79*1000)
 data_shuffled <- data[sample(nrow(data)),]
 train_data <- data_shuffled[1:split_index,-1]
 train_labels <- data_shuffled[1:split_index,1]
@@ -46,7 +46,7 @@ time_list <- c(time_list, time$toc-time$tic)
 plot(klist,acc_list, type = "o")
 
 tic("pca")
-pca_result <- prcomp(data_shuffled[,-1], center = TRUE, scale = TRUE)
+pca_result <- prcomp(data_shuffled[,-1], center = TRUE, scale = FALSE)
 toc()
 
 #plot(pca_result$sdev[1:100])
@@ -89,17 +89,23 @@ library(class)
 library(gmodels)
 library(caret)
 time_listFolds <- c()
-folds <- createFolds(data_shuffled$X1, k = 10)
 results = c()
-for(i in 1:10){
-  print(i)
-  train <- data_shuffled[-folds[[i]],-1]
-  test <- data_shuffled[folds[[i]],-1]
+##
+id_pca <-
+  prcomp(data_shuffled[, -1], center = TRUE, scale. = FALSE)
+data <- id_pca$x[, 1:38]
+data <- as.data.frame(data)
+folds <- createFolds(data_shuffled$X1, k = 10)
+for (i in 1:10) {
+  train <- data[-folds[[i]], -1]
+  test <- data[folds[[i]], -1]
   
-  train_labels <- data_shuffled[-folds[[i]],1] 
-  test_labels <- data_shuffled[folds[[i]],1] 
+  train_labels <- data_shuffled[-folds[[i]], 1]
+  test_labels <- data_shuffled[folds[[i]], 1]
+##
+  print(i) 
   tic("knnFold")
-  result <- knn(train = train, test = test, cl = train_labels, k = 5)
+  result <- knn(train = train, test = test, cl = train_labels, k = 3)
   time <- toc()
   time_listFolds <- c(time_listFolds, time$toc-time$tic)
   cfcMtx <- confusionMatrix(factor(result, levels = 0:9), factor(test_labels, levels = 0:9))
